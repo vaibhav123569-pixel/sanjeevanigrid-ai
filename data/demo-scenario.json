@@ -1,0 +1,21 @@
+{
+  "id": "assam-foothills-access-demo",
+  "name": "Rising water near Riverbend",
+  "dataSource": "SIMULATION",
+  "description": "Fictional geography and deterministic road graph for a product demonstration. It is not a live incident feed.",
+  "villages": [
+    { "id": "riverbend", "name": "Riverbend", "population": 1240, "vulnerability": 88, "coordinates": [26.182, 92.688] },
+    { "id": "sonapur", "name": "Sonapur", "population": 860, "vulnerability": 62, "coordinates": [26.218, 92.742] },
+    { "id": "hillview", "name": "Hillview", "population": 640, "vulnerability": 38, "coordinates": [26.266, 92.648] }
+  ],
+  "healthcareFacilities": [
+    { "id": "barak", "name": "Barak Community Hospital", "type": "District hospital", "emergency": true, "availability": "available", "coordinates": [26.112, 92.75] },
+    { "id": "valley", "name": "Valley Primary Health Centre", "type": "Primary health centre", "emergency": true, "availability": "available", "coordinates": [26.294, 92.786] }
+  ],
+  "stages": [
+    "Normal conditions", "Rising water", "Road hazard reported", "AI verification",
+    "Access risk identified", "Alternative route found", "Responder review", "Recommendation approved"
+  ],
+  "criticalRoad": { "id": "bridge", "bridge": true, "lengthKm": 12, "risk": 0.92, "blockedFromStage": 5 },
+  "modelNotice": "CareCutoff is a deterministic baseline estimate, not a trained ML prediction."
+}

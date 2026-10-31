@@ -1,0 +1,61 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isResponder() {
+      return signedIn()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'responder';
+    }
+
+    match /users/{userId} {
+      allow read: if signedIn() && (request.auth.uid == userId || isResponder());
+      allow create, delete: if false;
+      allow update: if signedIn()
+        && request.auth.uid == userId
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['displayName', 'preferredLanguage']);
+    }
+
+    match /citizen_reports/{reportId} {
+      allow create: if signedIn()
+        && request.resource.data.reporterUid == request.auth.uid
+        && request.resource.data.consent == true
+        && request.resource.data.verificationStatus == 'Pending review'
+        && request.resource.data.dataSource == 'citizen-submitted'
+        && request.resource.data.description is string
+        && request.resource.data.description.size() <= 2500;
+      allow read: if isResponder() || (signedIn() && resource.data.reporterUid == request.auth.uid);
+      allow update: if isResponder()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['verificationStatus', 'reviewedBy', 'reviewedAt', 'responderNote'])
+        && request.resource.data.reviewedBy == request.auth.uid
+        && request.resource.data.verificationStatus in ['Verified', 'Approved', 'Needs follow-up'];
+      allow delete: if false;
+    }
+
+    match /image_evidence/{evidenceId} {
+      allow create: if signedIn()
+        && request.resource.data.uploaderUid == request.auth.uid
+        && request.resource.data.consent == true
+        && request.resource.data.reviewStatus == 'pending'
+        && request.resource.data.fileSize is int
+        && request.resource.data.fileSize <= 8 * 1024 * 1024;
+      allow read: if isResponder() || (signedIn() && resource.data.uploaderUid == request.auth.uid);
+      allow update, delete: if false;
+    }
+
+    match /responder_actions/{actionId} {
+      allow create: if isResponder()
+        && request.resource.data.actorUid == request.auth.uid
+        && request.resource.data.incidentId is string
+        && request.resource.data.action in ['Verified', 'Approved', 'Needs follow-up'];
+      allow read: if isResponder() || (signedIn() && resource.data.actorUid == request.auth.uid);
+      allow update, delete: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
