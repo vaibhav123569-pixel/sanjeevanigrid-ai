@@ -1,3 +1,6 @@
+Warning: truncated output (original token count: 3275)
+Total output lines: 167
+
 # SanjeevaniGrid AI
 
 **Predict the cutoff. Keep care reachable.**
@@ -62,22 +65,7 @@ The auto-run reaches responder review in about 72 seconds and waits for a human 
 | Google Maps | Optional map layer with scenario markers and road overlays. | Set `VITE_GOOGLE_MAPS_API_KEY` and enable Maps JavaScript API. Without it, Leaflet + OpenStreetMap renders the same scenario graph. |
 | Flood, road and facility feeds | Not connected. | Integrate authoritative feeds and validate coverage, freshness and operational ownership before using outside a demo. |
 
-The sample geography is fictional and illustrative. Every dashboard count, hospital state, road state, event, location and route distance in the default demo is sample data. `SIMULATION`, `DEMO SEED`, and `LIVE` labels distinguish simulated and authenticated citizen-submitted reports.
-
-## Configuration
-
-Copy `.env.example` to `.env.local` for Vite settings. Frontend Firebase values are project configuration, not private secrets. Configure the backend environment separately:
-
-```text
-GEMINI_API_KEY=...                 # backend only
-GEMINI_MODEL=gemini-3.8-flash
-FIREBASE_PROJECT_ID=...            # enables Firebase ID-token enforcement in the API
-CORS_ORIGINS=https://your-host.example
-```
-
-If `FIREBASE_PROJECT_ID` is set, the API verifies Firebase ID tokens using Application Default Credentials. If it is omitted, endpoints remain available for a local judge demo and use the per-process rate limiter. The in-memory limiter is for the MVP only; use a shared gateway limiter for production.
-
-To enable the frontend integrations, set the corresponding `VITE_FIREBASE_*` values. Sign in from **VoiceSOS** to submit consented reports to Firestore, or from **Responder review** to take responder actions. The `users/{uid}` document must have `role: "responder"` for responder actions; user roles must be provisioned outside the client.
+The sample geography is fictional and illustrative. Every dashboard count, hospital state, road …275 tokens truncated…onder actions. The `users/{uid}` document must have `role: "responder"` for responder actions; user roles must be provisioned outside the client.
 
 ## Backend API
 
@@ -135,7 +123,7 @@ Use the 90-second walkthrough above to verify simulation, route recalculation, c
 
 ### Vercel
 
-The root `main.py` exposes the FastAPI service and serves the Vite build through FastAPI's frontend support. Vercel builds `dist/` and promotes its frontend files to the CDN; `/api/*` stays on the same origin. The frontend API base URL can remain blank.
+The root `main.py` exposes the FastAPI API service. Vercel builds the Vite app into `dist/`, then `scripts/publish-vercel-static.mjs` copies that bundle to the root `public/` directory for CDN serving. `/api/*` stays on the same origin, and the frontend API base URL can remain blank.
 
 1. Import this repository into Vercel, or run `npx vercel` from the repository root and follow the project-link prompts.
 2. Add `GEMINI_API_KEY` as a server environment variable to enable the optional AI endpoints. Without it, the frontend's local/sample fallbacks remain available.
